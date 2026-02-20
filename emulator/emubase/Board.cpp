@@ -845,6 +845,12 @@ int CMotherboard::TranslateAddress(uint16_t address, bool okHaltMode, bool /*okE
             return ADDRTYPE_IO;
         }
 
+        if (address < 0174000)  // Диапазон 170000-173777 не отвечает
+        {
+            *pOffset = 0;
+            return ADDRTYPE_DENY;
+        }
+
         // Область памяти эмулируемых регистров, только для режима USER
         if (!okHaltMode && address >= 0174000 && address < 0177700)
         {
