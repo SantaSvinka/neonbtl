@@ -29,6 +29,8 @@ NEONBTL. If not, see <http://www.gnu.org/licenses/>. */
 HINSTANCE g_hInst = NULL; // current instance
 HWND g_hwnd = NULL;
 long m_nMainLastFrameTicks = 0;
+int g_nFaststartFrames = 0;
+WORD g_wFaststartSavedSpeed = 1;
 
 
 //////////////////////////////////////////////////////////////////////
@@ -44,6 +46,7 @@ LPCTSTR g_CommandLineHelp =
     _T("/h /help\r\n\tShow command line options (this box)\r\n")
     _T("/autostart /autostarton\r\n\tStart emulation on window open\r\n")
     _T("/noautostart /autostartoff\r\n\tDo not start emulation on window open\r\n")
+    _T("/faststart:S\r\n\tWith /autostart, run at max speed for S seconds then restore normal speed\r\n")
     _T("/debug /debugon /debugger\r\n\tSwitch to debug mode\r\n")
     _T("/nodebug /debugoff\r\n\tSwitch off the debug mode\r\n")
     _T("/sound /soundon\r\n\tTurn sound on\r\n")
@@ -89,6 +92,14 @@ int APIENTRY _tWinMain(
     if (Option_ShowHelp)
         ::PostMessage(g_hwnd, WM_COMMAND, ID_HELP_COMMAND_LINE_HELP, NULL);
 
+    if (g_nFaststartFrames > 0)
+    {
+        g_wFaststartSavedSpeed = Settings_GetRealSpeed();
+        Settings_SetRealSpeed(0);
+        Emulator_SetSpeed(0);
+        MainWindow_UpdateMenu();
+    }
+
     LARGE_INTEGER nPerformanceFrequency;
     ::QueryPerformanceFrequency(&nPerformanceFrequency);
 
@@ -114,6 +125,17 @@ int APIENTRY _tWinMain(
                     ::PostMessage(g_hwnd, WM_COMMAND, ID_VIEW_DEBUG, 0);
                 else
                     ::FlashWindow(g_hwnd, TRUE);
+            }
+
+            if (g_nFaststartFrames > 0)
+            {
+                g_nFaststartFrames--;
+                if (g_nFaststartFrames == 0)
+                {
+                    Settings_SetRealSpeed(g_wFaststartSavedSpeed);
+                    Emulator_SetSpeed(g_wFaststartSavedSpeed);
+                    MainWindow_UpdateMenu();
+                }
             }
 
             ScreenView_RedrawScreen();
@@ -262,6 +284,12 @@ void ParseCommandLine()
         {
             Settings_SetAutostart(FALSE);
         }
+        else if (_tcslen(arg) > 11 && _tcsncmp(arg, _T("/faststart:"), 11) == 0)  // "/faststart:S", S = seconds
+        {
+            int secs = _ttoi(arg + 11);
+            if (secs > 0)
+                g_nFaststartFrames = secs * FRAMERATE;
+        }
         else if (_tcscmp(arg, _T("/debug")) == 0 || _tcscmp(arg, _T("/debugon")) == 0 || _tcscmp(arg, _T("/debugger")) == 0)
         {
             Settings_SetDebug(TRUE);
@@ -294,6 +322,9 @@ void ParseCommandLine()
         }
         //TODO: "/state:filepath" or "filepath.neonst"
     }
+
+    if (g_nFaststartFrames > 0 && !Settings_GetAutostart())  // /faststart works only with /autostart
+        g_nFaststartFrames = 0;
 
     ::LocalFree(args);
 }

@@ -895,6 +895,12 @@ void MainWindow_DoEmulatorRun()
     if (g_okEmulatorRunning)
     {
         Emulator_Stop();
+
+        if (g_nFaststartFrames > 0)
+        {
+            g_nFaststartFrames = 0;
+            MainWindow_DoEmulatorSpeed(g_wFaststartSavedSpeed);
+        }
     }
     else
     {
@@ -913,6 +919,8 @@ void MainWindow_DoEmulatorReset()
 }
 void MainWindow_DoEmulatorSpeed(WORD speed)
 {
+    g_nFaststartFrames = 0;
+
     Settings_SetRealSpeed(speed);
     Emulator_SetSpeed(speed);
 

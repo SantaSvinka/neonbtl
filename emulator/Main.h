@@ -181,6 +181,8 @@ void Settings_SetColor(ColorIndices colorIndex, COLORREF color);
 // Options
 
 extern bool Option_ShowHelp;
+extern int g_nFaststartFrames;
+extern WORD g_wFaststartSavedSpeed;
 
 
 //////////////////////////////////////////////////////////////////////
