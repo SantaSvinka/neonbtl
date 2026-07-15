@@ -120,6 +120,8 @@ int APIENTRY _tWinMain(
             if (!Emulator_SystemFrame())  // Breakpoint hit
             {
                 Emulator_Stop();
+                if (g_nFaststartFrames > 0)
+                    Main_CancelFastStart();
                 // Turn on debugger if not yet
                 if (!Settings_GetDebug())
                     ::PostMessage(g_hwnd, WM_COMMAND, ID_VIEW_DEBUG, 0);
@@ -131,11 +133,7 @@ int APIENTRY _tWinMain(
             {
                 g_nFaststartFrames--;
                 if (g_nFaststartFrames == 0)
-                {
-                    Settings_SetRealSpeed(g_wFaststartSavedSpeed);
-                    Emulator_SetSpeed(g_wFaststartSavedSpeed);
-                    MainWindow_UpdateMenu();
-                }
+                    Main_CancelFastStart();
             }
 
             ScreenView_RedrawScreen();
@@ -205,16 +203,7 @@ endprog:
     return (int) msg.wParam;
 }
 
-//
-//   FUNCTION: InitInstance(HINSTANCE, int)
-//
-//   PURPOSE: Saves instance handle and creates main window
-//
-//   COMMENTS:
-//
-//        In this function, we save the instance handle in a global variable and
-//        create and display the main program window.
-//
+// Saves instance handle and creates main window
 BOOL InitInstance(HINSTANCE /*hInstance*/, int /*nCmdShow*/)
 {
     INITCOMMONCONTROLSEX ics;  ics.dwSize = sizeof(ics);
@@ -259,6 +248,14 @@ void DoneInstance()
     BitmapFile_Done();
 
     Settings_Done();
+}
+
+void Main_CancelFastStart()
+{
+    g_nFaststartFrames = 0;
+    Settings_SetRealSpeed(g_wFaststartSavedSpeed);
+    Emulator_SetSpeed(g_wFaststartSavedSpeed);
+    MainWindow_UpdateMenu();
 }
 
 void ParseCommandLine()

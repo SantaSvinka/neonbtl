@@ -50,6 +50,7 @@ The emulator uses the following command-line options during startup:
 
  * `/autostart` `/autostarton` — Turn on emulation auto-start
  * `/noautostart` `/autostartoff` — Turn off the auto-start
+ * `/faststart:S` — Maximum speed is enabled for the first `S` seconds of emulation; only used with the `/autostart` option.
  * `/debug` `/debugon` `/debugger` — Turn on the debugger
  * `/debugoff` `/nodebug` — Turn off the debugger
  * `/sound` `/soundon` — Turn on the sound

@@ -50,6 +50,7 @@
 
  * `/autostart` `/autostarton` — Включение автозапуска эмуляции
  * `/noautostart` `/autostartoff` — Выключение автозапуска эмуляции
+ * `/faststart:S` — На первые `S` секунд эмуляции включается максимальная скорость; используется только с опцией `/autostart`
  * `/debug` `/debugon` `/debugger` — Включение отладчика
  * `/debugoff` `/nodebug` — Выключение отладчика
  * `/sound` `/soundon` — Включение звука

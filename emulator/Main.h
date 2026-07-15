@@ -24,6 +24,8 @@ extern TCHAR g_szWindowClass[MAX_LOADSTRING];      // Main window class name
 
 extern HINSTANCE g_hInst; // current instance
 
+void Main_CancelFastStart();
+
 
 //////////////////////////////////////////////////////////////////////
 // Main Window

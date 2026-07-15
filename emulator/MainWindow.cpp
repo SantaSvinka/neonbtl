@@ -897,10 +897,7 @@ void MainWindow_DoEmulatorRun()
         Emulator_Stop();
 
         if (g_nFaststartFrames > 0)
-        {
-            g_nFaststartFrames = 0;
-            MainWindow_DoEmulatorSpeed(g_wFaststartSavedSpeed);
-        }
+            Main_CancelFastStart();
     }
     else
     {
